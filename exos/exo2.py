@@ -1,0 +1,6 @@
+value = input("Veuillez saisir une valeur : ")
+print("En majuscules : " + value.upper())
+print("En minuscules : " + value.lower())
+words = value.split()
+words_count = len(words)
+print("Nombre de mots : " + str(words_count))
