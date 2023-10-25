@@ -1,30 +1,42 @@
 import requests
 from bs4 import BeautifulSoup
+import csv
 
 base = "https://www.scrapethissite.com/pages/forms/?page_num="
 
-pages_number = 3
+pages_number = 10
 
-for number in range(1, pages_number + 1):
-    url = base + str(number)
+with open('result.csv', 'w', newline='') as file:
+    writer = csv.writer(file)
 
-    response = requests.get(url)
+    writer.writerow(['Équipe', 'Année', 'Pourcentage'])
 
-    if response.status_code == 200:
-        soup = BeautifulSoup(response.text, 'html.parser')
+    for number in range(1, pages_number + 1):
+        url = base + str(number)
 
-        rows = soup.find_all('tr')
+        response = requests.get(url)
 
-        for row in rows[1:]: 
-            columns = row.find_all('td')
-            if len(columns) >= 3:
-                team = columns[0].text.strip()
-                year = columns[1].text.strip()
-                percentage = columns[2].text.strip()
+        if response.status_code == 200:
+            soup = BeautifulSoup(response.text, 'html.parser')
 
-                # Afficher les données
-                print(f"Équipe : {team}, Année : {year}, Pourcentage : {percentage}")
+            rows = soup.find_all('tr')
 
-    else:
-        print(f"Erreur")
+            for row in rows[1:]:
+                columns = row.find_all('td')
+                if len(columns) >= 3:
+                    team = columns[0].text.strip()
+                    year = columns[1].text.strip()
+                    wins = columns[2].text.strip()
+                    losses = columns[3].text.strip()
+                    percentage = columns[5].text.strip()
+                    gf = columns[6].text.strip()
+                    ga = columns[7].text.strip()
+                    ratio = columns[8].text.strip()
+
+                    if wins > losses:
+                        writer.writerow([team, year, wins, losses,percentage, gf, ga, ratio])
+        else:
+            print("Erreur")
+
+
 
